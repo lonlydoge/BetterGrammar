@@ -3,38 +3,13 @@ local LocalPlayer = Players.LocalPlayer;
 
 local ChatHook;
 
-local Marks = {
-    {
-        "?", 
-
-        {
-            "how",
-            "what",
-            "why",
-            "when",
-            "who",
-            "where",
-        }
-    },
-    {
-        "!",
-
-        {
-            "stop"
-        }
-    },
-    {
-        ".",
-
-        {}
-    }
-}
+local Marks = {{"?", {"how", "what", "why", "when", "who", "where"}}, {"!", {"stop"}}, {".", {}}}
 
 local RemovePunctiation = function(Message)
     for _, Mark in ipairs(Marks) do
         local CMark = Mark[1];
 
-        Message = string.gsub(Message, "%"..CMark, "");
+        Message = string.gsub(Message, "%" .. CMark, "");
     end
 
     return Message;
@@ -44,7 +19,7 @@ local CheckForMark = function(Message)
     for _, Mark in ipairs(Marks) do
         local CMark = Mark[1];
 
-        if string.sub(Message, -1, -1) == CMark then
+        if string.sub(Message, #Message, #Message) == CMark then
             return CMark;
         end
     end
@@ -57,8 +32,8 @@ local GrammarFunctions = {
         local FirstCharacter = string.sub(Message, 1, 1);
 
         FirstCharacter = string.upper(FirstCharacter);
-    
-        Message = FirstCharacter..string.sub(Message, 2, #Message);
+
+        Message = FirstCharacter .. string.sub(Message, 2, #Message);
 
         return Message;
     end,
@@ -90,7 +65,7 @@ local GrammarFunctions = {
             end
         end
 
-        return Message..LastCharacter;
+        return Message .. LastCharacter;
     end,
 
     ICapitilazation = function(Message)
@@ -115,11 +90,23 @@ local GrammarFunctions = {
                 String = RemovePunctiation(String);
             end
 
-            if string.lower(string.sub(String, -1, -1)) == "s" and string.lower(string.sub(String, -1, -2)) ~= "es" and string.lower(string.sub(String, -1, -3)) ~= "ies" then
+            if string.lower(string.sub(String, #String, #String)) == "s" and
+                string.lower(string.sub(String, #String - 1, #String)) ~= "es" and
+                string.lower(string.sub(String, #String - 1, #String)) ~= "is" and
+                string.lower(string.sub(String, #String - 2, #String)) ~= "ies" then
                 if CFMark then
-                    SMessage[Index] = string.sub(String, 1, #String - 1).."'s"..CFMark;
+                    SMessage[Index] = string.sub(String, 1, #String - 1) .. "'s" .. CFMark;
                 else
-                    SMessage[Index] = string.sub(String, 1, #String - 1).."'s";
+                    SMessage[Index] = string.sub(String, 1, #String - 1) .. "'s";
+                end
+            end
+
+            if string.lower(string.sub(String, #String, #String)) == "t" and
+                string.lower(string.sub(String, #String - 1, #String)) == "nt" then
+                if CFMark then
+                    SMessage[Index] = string.sub(String, 1, #String - 1) .. "'t" .. CFMark;
+                else
+                    SMessage[Index] = string.sub(String, 1, #String - 1) .. "'t";
                 end
             end
         end
